@@ -125,12 +125,12 @@ async function clearSiteData() {
     statusLabel.textContent = `Successfully cleared data for ${domain}`;
     
     //
-    // Disable button for 3 seconds
+    // Disable button for 2 seconds
     //
     setTimeout(() => {
       clearButton.disabled = false;
       statusLabel.className = 'status';
-    }, 3000);
+    }, 2000);
     
   } catch (error) {
     console.error('Error clearing data:', error);
@@ -138,12 +138,12 @@ async function clearSiteData() {
     statusLabel.textContent = 'Error: ' + error.message;
     
     //
-    // Re-enable button after slightly longer than 3 seconds
+    // Re-enable button after slightly longer than 2 seconds
     //
     setTimeout(() => {
       clearButton.disabled = false;
       statusLabel.className = 'status';
-    }, 3100);
+    }, 2100);
   }
 }
 
