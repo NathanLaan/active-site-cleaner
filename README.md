@@ -1,6 +1,6 @@
 # Site-Cleaner
 
-Simple web browser extension to quickly delete website cookies and data. Tested with Chrome and Firefox.
+Simple web browser extension to quickly delete website cookies and data for the currently active website (active tab). 
 
 - [Firefox Extension Page](https://addons.mozilla.org/en-US/developers/addon/active-site-cleaner/)
 
@@ -65,7 +65,7 @@ Firefox packaging instructions:
 
 ```bash
 mv manifest_firefox.json manifest.json
-zip -r ../site-cleaner-firefox.zip *
+zip -r ../active-site-cleaner-firefox.zip *
 mv manifest.json manifest_firefox.json
 ```
 
