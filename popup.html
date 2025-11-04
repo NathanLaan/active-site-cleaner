@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 300px;
+      padding: 15px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: left;
+    }
+    h2 {
+      margin: 10px 0;
+      font-size: 18px;
+      color: #333;
+    }
+    .domain {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+      word-break: break-all;
+      text-align: left;
+    }
+    .clear-button {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .clear-button:hover {
+      background: #c82333;
+    }
+    .clear-button:active {
+      transform: scale(0.98);
+    }
+    .clear-button:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+    .status {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      text-align: left;
+      display: none;
+    }
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      display: block;
+    }
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      display: block;
+    }
+    .status.working {
+      background: #fff3cd;
+      color: #856404;
+      display: block;
+    }
+    .info {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #666;
+      text-align: left;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Clear Site Data</h2>
+    <div class="domain" id="domainLabel">Loading...</div>
+    <button class="clear-button" id="clearButton">Clear All Data</button>
+    <div class="status" id="statusLabel"></div>
+    <div class="info" id="infoLabel">
+      Delete Cookies, Local Storage, Session, and Cache.
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
