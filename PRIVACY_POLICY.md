@@ -1,4 +1,4 @@
-# Privacy Policy - Clear Site Data Extension
+# Privacy Policy - Active Site Cleaner Extension
 
 ## Data Collection
 

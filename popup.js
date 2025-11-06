@@ -30,7 +30,7 @@ async function getCurrentDomain() {
 async function displayDomain() {
   const domain = await getCurrentDomain();
   const domainLabel = document.getElementById('domainLabel');
-  
+
   if (domain) {
     domainLabel.textContent = domain;
   } else {
@@ -46,12 +46,14 @@ async function clearSiteData() {
   const infoLabel = document.getElementById('infoLabel');
   const statusLabel = document.getElementById('statusLabel');
   const clearButton = document.getElementById('clearButton');
-  
+  const progressContainer = document.getElementById('progressContainer');
+
   try {
     clearButton.disabled = true;
     statusLabel.className = 'status working';
     statusLabel.textContent = 'Clearing Data...';
-    
+    progressContainer.style.display = 'block';
+
     const domain = await getCurrentDomain();
     if (!domain) {
       throw new Error('Error: Unable to detect domain');
@@ -59,91 +61,120 @@ async function clearSiteData() {
 
     const tabs = await browserAPI.tabs.query({ active: true, currentWindow: true });
     const currentUrl = tabs[0].url;
-    
+
     //
-    // Clear domain and subdomain cookies
+    // Initialize tracking variables
     //
-    const cookies = await browserAPI.cookies.getAll({ domain: domain });
-    const cookiePromises = [];
-    
-    for (const cookie of cookies) {
-      const url = `http${cookie.secure ? 's' : ''}://${cookie.domain.startsWith('.') ? cookie.domain.substring(1) : cookie.domain}${cookie.path}`;
-      cookiePromises.push(browserAPI.cookies.remove({
-        url: url,
-        name: cookie.name
-      }));
+    let totalCookies = 0;
+    let clearedCookies = 0;
+
+    //
+    // Inner helper function to update progress UI
+    //
+    function updateProgress(cookiesClearedCount, totalCookiesCount, phase) {
+      const percentage = totalCookiesCount > 0
+        ? Math.round((cookiesClearedCount / totalCookiesCount) * 100)
+        : 0;
+
+      document.getElementById('progressFill').style.width = percentage + '%';
+      document.getElementById('progressText').textContent = percentage + '%';
     }
 
     //
-    // Try with www prefix
+    // Inner helper function to clear cookies with progress tracking
     //
-    if (!domain.startsWith('www.')) {
-      const wwwCookies = await browserAPI.cookies.getAll({ domain: 'www.' + domain });
-      for (const cookie of wwwCookies) {
+    async function clearCookiesWithProgress(cookieList, label) {
+      const cookiePromises = [];
+      let clearedCount = 0;
+
+      document.getElementById(label + 'Count').textContent = `0/${cookieList.length}`;
+
+      for (const cookie of cookieList) {
         const url = `http${cookie.secure ? 's' : ''}://${cookie.domain.startsWith('.') ? cookie.domain.substring(1) : cookie.domain}${cookie.path}`;
-        cookiePromises.push(browserAPI.cookies.remove({
+
+        const promise = browserAPI.cookies.remove({
           url: url,
           name: cookie.name
-        }));
+        }).then(() => {
+          clearedCount++;
+          document.getElementById(label + 'Count').textContent = `${clearedCount}/${cookieList.length}`;
+          updateProgress(clearedCookies + clearedCount, totalCookies);
+        });
+
+        cookiePromises.push(promise);
       }
+
+      await Promise.all(cookiePromises);
+      return clearedCount;
     }
-    
+
     //
-    // Check for subdomains cookies (leading dot)
+    // Get all cookies and count total
     //
+    const cookies = await browserAPI.cookies.getAll({ domain: domain });
+    totalCookies = cookies.length;
+
+    const wwwCookies = !domain.startsWith('www.')
+      ? await browserAPI.cookies.getAll({ domain: 'www.' + domain })
+      : [];
+    totalCookies += wwwCookies.length;
+
     const dotCookies = await browserAPI.cookies.getAll({ domain: '.' + domain });
-    for (const cookie of dotCookies) {
-      const url = `http${cookie.secure ? 's' : ''}://${cookie.domain.startsWith('.') ? cookie.domain.substring(1) : cookie.domain}${cookie.path}`;
-      cookiePromises.push(browserAPI.cookies.remove({
-        url: url,
-        name: cookie.name
-      }));
+    totalCookies += dotCookies.length;
+
+    //
+    // Clear domain cookies
+    //
+    const clearedDomain = await clearCookiesWithProgress(cookies, 'cookie');
+    clearedCookies += clearedDomain;
+
+    //
+    // Clear www cookies
+    //
+    if (wwwCookies.length > 0) {
+      const clearedWww = await clearCookiesWithProgress(wwwCookies, 'wwwCookie');
+      clearedCookies += clearedWww;
     }
-    
-    await Promise.all(cookiePromises);
-    
+
     //
-    // Clear data for the origin
+    // Clear subdomain cookies
     //
-    // Failing on Firefox due to updated API:
-    // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browsingData/remove
+    if (dotCookies.length > 0) {
+      const clearedSubdomain = await clearCookiesWithProgress(dotCookies, 'subdomainCookie');
+      clearedCookies += clearedSubdomain;
+    }
+
     //
-    // const origin = new URL(currentUrl).origin;
-    // await browserAPI.browsingData.remove({
-    //   origins: [origin]
-    // }, {
-    //   cacheStorage: true,
-    //   cookies: true,
-    //   fileSystems: true,
-    //   indexedDB: true,
-    //   localStorage: true,
-    //   serviceWorkers: true,
-    //   webSQL: true
-    // });
-    
+    // Finalize progress
+    //
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('progressText').textContent = '100%';
+
     statusLabel.className = 'status success';
-    statusLabel.textContent = `Successfully cleared data for ${domain}`;
-    
+    statusLabel.textContent = `Successfully cleared ${clearedCookies} item(s) for ${domain}`;
+
     //
-    // Disable button for 2 seconds
+    // Hide progress and disable button for 3 seconds
     //
     setTimeout(() => {
       clearButton.disabled = false;
       statusLabel.className = 'status';
-    }, 2000);
-    
+      progressContainer.style.display = 'none';
+    }, 3000);
+
   } catch (error) {
     console.error('Error clearing data:', error);
     statusLabel.className = 'status error';
     statusLabel.textContent = 'Error: ' + error.message;
-    
+    progressContainer.style.display = 'none';
+
     //
-    // Re-enable button after slightly longer than 2 seconds
+    // Re-enable button after slightly longer than 3 seconds
     //
     setTimeout(() => {
       clearButton.disabled = false;
       statusLabel.className = 'status';
-    }, 2100);
+    }, 3100);
   }
 }
 
