@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Active-Site-Cleaner",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Web browser extension to quickly delete website cookies and data for the currently active website (active tab).",
   "developer": {
     "name": "Nathan Laan",
@@ -15,8 +15,8 @@
   },
   "permissions": [
     "cookies",
-    "storage",
-    "browsingData",
+    // "storage",
+    // "browsingData",
     "activeTab",
     "tabs",
     "<all_urls>"

@@ -145,6 +145,34 @@ async function clearSiteData() {
     }
 
     //
+    // TODO: Add feature to check browser type and use appropriate API calls
+    //
+
+    //
+    // Using origins to clear other storage types is not supported in Chrome.
+    // The following code is commented out to maintain cross-browser compatibility.
+    // Need to find alternative methods for Chrome.
+    //
+    // //
+    // // Clear browsing data for the specific origin
+    // //
+    // const origin = new URL(currentUrl).origin;
+    //
+    // // Clear various types of storage
+    // await browserAPI.browsingData.remove({
+    //   origins: [origin]
+    // }, {
+    //   cacheStorage: true,
+    //   cookies: true,
+    //   fileSystems: true,
+    //   indexedDB: true,
+    //   localStorage: true,
+    //   serviceWorkers: true,
+    //   webSQL: true
+    // });
+    //
+
+    //
     // Finalize progress
     //
     document.getElementById('progressFill').style.width = '100%';

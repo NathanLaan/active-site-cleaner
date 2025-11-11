@@ -3,6 +3,7 @@
 Simple web browser extension to quickly delete website cookies and data for the currently active website (active tab).
 
 - [Firefox Extension Page](https://addons.mozilla.org/en-US/developers/addon/active-site-cleaner/)
+- [Chrome Extension Page (Pending Approval)](https://chromewebstore.google.com/)
 
 ## Features
 
