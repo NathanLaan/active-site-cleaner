@@ -61,20 +61,17 @@ Pre-requisites:
 ```bash
 sudo apt update
 sudo apt install zip
+chmod +x ./package.sh
 ```
 
 Firefox packaging instructions:
 
 ```bash
-mv manifest_firefox.json manifest.json
-zip -r ../active-site-cleaner-firefox.zip *
-mv manifest.json manifest_firefox.json
+./package.sh firefox
 ```
 
 Chrome packaging instructions:
 
 ```bash
-mv manifest_chrome.json manifest.json
-zip -r ../active-site-cleaner-chrome.zip *
-mv manifest.json manifest_chrome.json
+./package.sh
 ```
