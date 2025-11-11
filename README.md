@@ -1,4 +1,4 @@
-# Site-Cleaner
+# Active-Site-Cleaner
 
 Simple web browser extension to quickly delete website cookies and data for the currently active website (active tab).
 
